@@ -7,8 +7,8 @@ import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/pages/chat_list/chat_list.dart';
+import 'package:fluffychat/pages/chat_list/chat_list_search_bar.dart';
 import 'package:fluffychat/pages/chat_list/navigation_rail.dart';
-import 'package:fluffychat/pages/chat_list/start_chat_fab.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'chat_list_body.dart';
@@ -91,19 +91,15 @@ class ChatListView extends StatelessWidget {
                     child: ChatListViewBody(controller),
                   ),
                 ),
-                floatingActionButton:
-                    !controller.isSearchMode &&
-                        controller.activeSpaceId == null &&
+                bottomNavigationBar:
+                    controller.activeSpaceId == null &&
                         !FluffyThemes.isColumnMode(context)
-                    ? ValueListenableBuilder(
-                        valueListenable: controller.scrolledToTop,
-                        builder: (context, scrolledToTop, _) => StartChatFab(
-                          extended:
-                              scrolledToTop &&
-                              !AppSettings.displayNavigationRail.value,
-                        ),
+                    ? SafeArea(
+                        top: false,
+                        minimum: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: ChatListSearchBar(controller: controller),
                       )
-                    : const SizedBox.shrink(),
+                    : null,
               ),
             ),
           ),

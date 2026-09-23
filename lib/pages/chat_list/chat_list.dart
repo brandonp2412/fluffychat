@@ -457,16 +457,8 @@ class ChatListController extends State<ChatList>
         )
         .listen(_updateRoomTags);
 
-    if (roomTags.containsKey(AppSettings.chatFilter.value)) {
-      activeFilter = ActiveFilter.tag;
-      activeTag = AppSettings.chatFilter.value;
-    } else {
-      activeFilter =
-          ActiveFilter.values.singleWhereOrNull(
-            (filter) => AppSettings.chatFilter.value == filter.name,
-          ) ??
-          ActiveFilter.allChats;
-    }
+    activeFilter = ActiveFilter.allChats;
+    activeTag = null;
 
     _processPushHelperCrashReport();
 
