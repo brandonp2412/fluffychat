@@ -9,6 +9,7 @@ import 'package:fluffychat/config/routes.dart';
 import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/l10n/l10n.dart';
+import 'package:fluffychat/utils/app_locale_controller.dart';
 import 'package:fluffychat/widgets/app_lock.dart';
 import 'package:fluffychat/widgets/layouts/call_overlay.dart';
 import 'package:fluffychat/widgets/theme_builder.dart';
@@ -65,7 +66,10 @@ class FluffyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeBuilder(
-      builder: (context, themeMode, primaryColor) => MaterialApp.router(
+      builder: (context, themeMode, primaryColor) => ValueListenableBuilder<String>(
+        valueListenable: AppLocaleController.selectedTag,
+        builder: (context, localeTag, _) => MaterialApp.router(
+        locale: AppLocaleController.localeForTag(localeTag),
         title: AppSettings.applicationName.value,
         themeMode: themeMode,
         theme: FluffyThemes.buildTheme(context, Brightness.light, primaryColor),
@@ -95,6 +99,7 @@ class FluffyChatApp extends StatelessWidget {
               child: testWidget ?? child ?? const SizedBox.shrink(),
             ),
           ),
+        ),
         ),
       ),
     );

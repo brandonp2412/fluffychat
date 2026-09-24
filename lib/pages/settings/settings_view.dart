@@ -6,6 +6,7 @@
 import 'package:async/async.dart';
 import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/l10n/l10n.dart';
+import 'package:fluffychat/utils/app_locale_controller.dart';
 import 'package:fluffychat/utils/fluffy_share.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
 import 'package:fluffychat/widgets/avatar.dart';
@@ -149,6 +150,22 @@ class SettingsView extends StatelessWidget {
                   ? theme.colorScheme.surfaceContainerHigh
                   : null,
               onTap: () => context.go('/rooms/settings/style'),
+            ),
+            ValueListenableBuilder<String>(
+              valueListenable: AppLocaleController.selectedTag,
+              builder: (context, localeTag, _) => ListTile(
+                leading: const Icon(Icons.language_outlined),
+                title: Text(L10n.of(context).language),
+                subtitle: Text(
+                  localeTag.isEmpty
+                      ? L10n.of(context).systemDefault
+                      : AppLocaleController.displayName(
+                          AppLocaleController.localeForTag(localeTag) ??
+                              Localizations.localeOf(context),
+                        ),
+                ),
+                onTap: controller.setLanguageAction,
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.notifications_outlined),
