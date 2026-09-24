@@ -372,7 +372,7 @@ class BackgroundPush {
     }
     await setupPusher(
       client: client,
-      gatewayUrl: AppSettings.pushNotificationsGatewayUrl.value,
+      gatewayUrl: 'http://127.0.0.1:18866/_matrix/push/v1/notify',
       token: _fcmToken,
     );
   }
