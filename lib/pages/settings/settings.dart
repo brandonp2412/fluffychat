@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluffychat/l10n/l10n.dart';
+import 'package:fluffychat/utils/app_locale_controller.dart';
 import 'package:fluffychat/utils/file_selector.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
 import 'package:fluffychat/widgets/adaptive_dialogs/show_modal_action_popup.dart';
@@ -65,6 +66,60 @@ class SettingsController extends State<Settings> {
     if (success.error == null) {
       updateProfile();
     }
+  }
+
+  Future<void> setLanguageAction() async {
+    final l10n = L10n.of(context);
+    final currentTag = AppLocaleController.selectedTag.value;
+    final selectedTag = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: FractionallySizedBox(
+          heightFactor: 0.8,
+          child: Column(
+            children: [
+              ListTile(
+                title: Text(l10n.language),
+                trailing: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(sheetContext).pop(),
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: ListView(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.phone_android_outlined),
+                      title: Text(l10n.systemDefault),
+                      trailing: currentTag.isEmpty
+                          ? const Icon(Icons.check)
+                          : null,
+                      onTap: () => Navigator.of(sheetContext).pop(''),
+                    ),
+                    for (final locale in L10n.supportedLocales)
+                      ListTile(
+                        title: Text(AppLocaleController.displayName(locale)),
+                        subtitle: Text(locale.toLanguageTag()),
+                        trailing: currentTag == locale.toLanguageTag()
+                            ? const Icon(Icons.check)
+                            : null,
+                        onTap: () => Navigator.of(
+                          sheetContext,
+                        ).pop(locale.toLanguageTag()),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (selectedTag == null) return;
+    await AppLocaleController.setTag(selectedTag);
+    if (mounted) setState(() {});
   }
 
   Future<void> logoutAction() async {

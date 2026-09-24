@@ -2815,5 +2815,13 @@
         "placeholders": {
             "error": {"type": "String"}
         }
-    }
+    },
+  "language": "Language",
+  "@language": {
+    "description": "Title for the application language setting"
+  },
+  "systemDefault": "System default",
+  "@systemDefault": {
+    "description": "Use the device language instead of an app-specific override"
+  }
 }

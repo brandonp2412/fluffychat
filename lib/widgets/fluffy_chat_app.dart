@@ -9,6 +9,7 @@ import 'package:fluffychat/config/routes.dart';
 import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/l10n/l10n.dart';
+import 'package:fluffychat/utils/app_locale_controller.dart';
 import 'package:fluffychat/widgets/app_lock.dart';
 import 'package:fluffychat/widgets/layouts/call_overlay.dart';
 import 'package:fluffychat/widgets/theme_builder.dart';
@@ -65,38 +66,47 @@ class FluffyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeBuilder(
-      builder: (context, themeMode, primaryColor) => MaterialApp.router(
-        title: AppSettings.applicationName.value,
-        themeMode: themeMode,
-        theme: FluffyThemes.buildTheme(context, Brightness.light, primaryColor),
-        darkTheme: FluffyThemes.buildTheme(
-          context,
-          Brightness.dark,
-          primaryColor,
-        ),
-        scrollBehavior: CustomScrollBehavior(),
-        localizationsDelegates: [
-          ...L10n.localizationsDelegates,
-          ...GlobalMaterialLocalizations.delegates,
-          ...GlobalCupertinoLocalizations.delegates,
-        ],
-        supportedLocales: L10n.supportedLocales,
-        routerConfig: router,
-        builder: (context, child) => AppLockWidget(
-          pincode: appLockSettings.pincode,
-          useBiometrics: appLockSettings.useBiometrics,
-          isLoggedIn: clients.any((client) => client.isLogged()),
-          // Need a navigator above the Matrix widget for
-          // displaying dialogs
-          child: Matrix(
-            clients: clients,
-            store: store,
-            child: CallOverlay(
-              child: testWidget ?? child ?? const SizedBox.shrink(),
+      builder: (context, themeMode, primaryColor) =>
+          ValueListenableBuilder<String>(
+            valueListenable: AppLocaleController.selectedTag,
+            builder: (context, localeTag, _) => MaterialApp.router(
+              locale: AppLocaleController.localeForTag(localeTag),
+              title: AppSettings.applicationName.value,
+              themeMode: themeMode,
+              theme: FluffyThemes.buildTheme(
+                context,
+                Brightness.light,
+                primaryColor,
+              ),
+              darkTheme: FluffyThemes.buildTheme(
+                context,
+                Brightness.dark,
+                primaryColor,
+              ),
+              scrollBehavior: CustomScrollBehavior(),
+              localizationsDelegates: [
+                ...L10n.localizationsDelegates,
+                ...GlobalMaterialLocalizations.delegates,
+                ...GlobalCupertinoLocalizations.delegates,
+              ],
+              supportedLocales: L10n.supportedLocales,
+              routerConfig: router,
+              builder: (context, child) => AppLockWidget(
+                pincode: appLockSettings.pincode,
+                useBiometrics: appLockSettings.useBiometrics,
+                isLoggedIn: clients.any((client) => client.isLogged()),
+                // Need a navigator above the Matrix widget for
+                // displaying dialogs
+                child: Matrix(
+                  clients: clients,
+                  store: store,
+                  child: CallOverlay(
+                    child: testWidget ?? child ?? const SizedBox.shrink(),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 }
